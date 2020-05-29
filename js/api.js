@@ -1,11 +1,34 @@
 const table = document.getElementById("mosaic");
 
+let _keyMap = {};
+
+/**
+ * Bind the onkeydown event to our handler function that allows for the onKey() function.
+ */
+document.onkeydown = e => _handleKeyDown(e);
+
+/**
+ * Handles onkeydown events with the keyMap that the user can define with their onKey() declarations.
+ * @param {Event} e 
+ */
+function _handleKeyDown(e) {
+    // if the key has a function mapped to it
+    if (e.key in _keyMap) {
+        // call the function that is mapped to the key
+        _keyMap[e.key]();
+    }
+}
+
+/**
+ * Utility function to pause execution for a given amount of milliseconds.
+ * @param {Number} ms 
+ */
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**
- * The class that allows for color interaction.
+ * A class that allows for color interaction.
  */
 class Color {
     /**
@@ -102,6 +125,9 @@ class Color {
     };
 }
 
+/**
+ * A class that 
+ */
 class Tile {
     constructor(cellRef) {
         // set the cell propery of the object to the reference to HTML TableCell
@@ -256,312 +282,6 @@ class Tile {
 
         return this;
     }
-
-    get text() {
-        return this._text;
-    }
-
-    set text(text) {
-        this._text = text;
-
-        this.cell.innerText = text;
-    }
-
-    setText(text) {
-        this.text = text;
-
-        return this;
-    }
-
-    get onClick() {
-        return this._onClick;
-    }
-
-    set onClick(func) {
-        this._onClick = func;
-
-        // set the DOM onclick property to the function
-        this.cell.onclick = func;
-    }
-
-    setOnClick(func) {
-        // without the underscore means its calling the setter
-        this.onClick = func;
-
-        return this;
-    }
-
-    get onMouseOver() {
-        return this._onMouseOver;
-    }
-
-    set onMouseOver(func) {
-        this._onMouseOver = func;
-
-        // set DOM onmouseover property to the function
-        this.cell.onmouseover = func;
-    }
-
-    setOnMouseOver(func) {
-        this.onMouseOver = func;
-
-        return this;
-    }
-}
-
-/**
- * The Mosaic class.
- */
-class Mosaic {
-    constructor(width, height) {
-        // set the height and width
-        this._height = height;
-        this._width  = width;
-
-        // clear any leftover table HTML
-        table.innerHTML = "";
-
-        // create grid without tiles
-        this._tiles = [...Array(this._width)].map(x => Array(this._height));
-
-        // create table with height and width parameters
-        for (let y = 0; y < this._height; y++) {
-            let tableRow = table.insertRow(y);
-
-            for (let x = 0; x < this._width; x++)  {
-                let tile = new Tile(tableRow.insertCell(x));
-
-                this._tiles[x][this._height - 1 - y] = tile;
-            }
-        }
-    };
-                
-    /**
-     * Set the height of the Mosaic object.
-     */
-    set height(height) {
-        // this._height = height;
-    }
-
-    /**
-     * Get the width of the Mosaic object.
-     */
-    set width(width) {
-        // this._width = width;
-    }
-                
-    /**
-     * Get the height of the Mosaic object.
-     */
-    get height() {
-        return this._height;
-    }
-
-    /**
-     * Get the width of the Mosaic object.
-     */
-    get width() {
-        return this._width;
-    }
-
-    get tiles() {
-        return this._tiles;
-    }
-
-    /**
-     * Get the raw DOM element from the table in case the user wants to do something 
-     * outside of the normal Mosaic API.
-     */
-    getTile(x, y) {
-        // bounds checking
-        if (x >= 0 && x < this._width && y >= 0 && y < this._height)
-            return this._tiles[x][y];
-    }
-                
-    /**
-     * Set the tile color at x, y.
-     */
-    setTileColor(x, y, color) {
-        // bounds checking
-        if (x >= 0 && x < this._width && y >= 0 && y < this._height) 
-            this.getTile(x, y).color = color;
-    }
-
-    /**
-     * Get the tile color at x, y.
-     */
-    getTileColor(x, y) {
-        // bounds checking
-        if (x >= 0 && x < this._width && y >= 0 && y < this._height)
-            return this.getTile(x, y).color;
-    }
-
-    /*
-     * Give the pixel a color gradient.
-     */
-    setTileGradient(x, y, ...colors) {
-        // bounds checking
-        if (x >= 0 && x < this._width && y >= 0 && y < this._height)
-            this.getTile(x, y).gradient = colors;
-    }
-
-    /*
-     * Give the pixel a color gradient.
-     */
-    getTileGradient(x, y) {
-        // bounds checking
-        if (x >= 0 && x < this._width && y >= 0 && y < this._height)
-            return this.getTile(x, y).gradient;
-    }
-
-    /**
-     * Set the background image of the Tile.
-     * @param {Number} x 
-     * @param {Number} y 
-     * @param {String} url 
-     */
-    setTileBackgroundImage(x, y, url) {
-        // bounds checking
-        if (x >= 0 && x < this._width && y >= 0 && y < this._height)
-            this.getTile(x, y).backgroundImage = url;
-    }
-
-    /**
-     * 
-     * @param {Number} x 
-     * @param {Number} y 
-     * @returns {String} url
-     */
-    getTileBackgroundImage(x, y) {
-        // bounds checking
-        if (x >= 0 && x < this._width && y >= 0 && y < this._height)
-            return this.getTile(x, y).backgroundImage;
-    }
-
-    /**
-     * Set the tile border color at x, y.
-     */
-    setTileBorderColor(x, y, color) {
-        // bounds checking
-        if (x >= 0 && x < this._width && y >= 0 && y < this._height)
-            this.getTile(x, y).borderColor = color;
-    }
-
-    /**
-     * Get the tile border color at x, y.
-     */
-    getTileBorderColor(x, y) {
-        // bounds checking
-        if (x >= 0 && x < this._width && y >= 0 && y < this._height) 
-            return this.getTile(x, y).borderColor;
-    }
-
-    /**
-     * Set the tile border width at x, y.
-     */
-    setTileBorderWidth(x, y, width) {
-        // bounds checking
-        if (x >= 0 && x < this._width && y >= 0 && y < this._height) 
-            this.getTile(x, y).borderWidth = width;
-    }
-
-    /**
-     * Set the tile border color at x, y.
-     */
-    getTileBorderWidth(x, y) {
-        // bounds checking
-        if (x >= 0 && x < this._width && y >= 0 && y < this._height) 
-            return this.getTile(x, y).borderWidth;
-    }
-
-    /**
-     * Set the tile border style at x, y.
-     */
-    setTileBorderStyle(x, y, style) {
-        // bounds checking
-        if (x >= 0 && x < this._width && y >= 0 && y < this._height)
-            this.getTile(x, y).borderStyle = style;
-    }
-
-    /**
-     * Get the tile border style at x, y.
-     */
-    getBorderStyle(x, y) {
-        // bounds checking
-        if (x >= 0 && x < this._width && y >= 0 && y < this._height)
-            return this.getTile(x, y).borderStyle;
-    }
-
-    /**
-     * Set tile border properties at x, y.
-     */
-    setTileBorder(x, y, color, width, style) {
-        setTileBorderColor(x, y, color);
-        setTileBorderWidth(x, y, width);
-        setTileBorderStyle(x, y, style);
-    }
-
-    /**
-     * Set tile inner text.
-     */
-    setTileText(x, y, text) {
-        // bounds checking
-        if (x >= 0 && x < this._width && y >= 0 && y < this._height) 
-            this.getTile(x, y).text = text;
-    }
-
-    /**
-     * Get tile inner text.
-     */
-    getTileText(x, y) {
-        // bounds checking
-        if (x >= 0 && x < this._width && y >= 0 && y < this._height)
-            return this.getTile(x, y).text;
-    }
-
-    /**
-     * Set the tile click function.
-     */
-    setTileOnClick(x, y, func) {
-        // bounds checking
-        if (x >= 0 && x < this._width && y >= 0 && y < this._height) 
-            this.getTile(x, y).onClick = func;
-    }
-
-    /**
-     * Set the tile mouseover function.
-     */
-    setTileOnMouseOver(x, y, func) {
-        // bounds checking
-        if (x >= 0 && x < this._width && y >= 0 && y < this._height)
-            this.getTile(x, y).onMouseOver = func;
-    }
-
-    /**
-     * A wrapper function to allow animation looping.
-     */
-    static loop(func, time) {
-        this.loopId = setInterval(func, time);
-    }
-
-    static stopLoop() {
-        clearInterval(this.loopId);
-
-        this.loopId = 0;
-    }
-
-    /**
-     * Clear the Mosaic's tile color values.
-     */
-    clear() {
-        for (let x = 0; x < this._width; x++) {
-            for (let y = 0; y < this._height; y++) {
-                this.getTile(x, y).backgroundImage = "";
-                this.getTile(x, y).transform = "";
-                this.getTile(x, y).color = "#eeeeee";
-            }
-        }
-    }
 }
 
 /**
@@ -590,4 +310,260 @@ class Player {
     static getVoices() {
         return window.speechSynthesis.getVoices().map(voice => voice);
     }
+}
+
+/**
+ * The Mosaic class.
+ */
+class Mosaic {
+    constructor(width, height) {
+        // set the height and width
+        this._height = height;
+        this._width  = width;
+
+        // clear any leftover table HTML
+        table.innerHTML = "";
+
+        // create grid without tiles
+        this._tiles = [];
+
+        // create table with height and width parameters
+        for (let y = 0; y < this._height; y++) {
+            let tableRow = table.insertRow(y);
+            let arrayRow = [];
+
+            for (let x = 0; x < this._width; x++)  {
+                arrayRow.push({
+                    "cellRef": tableRow.insertCell(x),
+                    "texture": undefined
+                });
+            }
+
+            this._tiles.push(arrayRow);
+        }
+    }
+
+    get width() {
+        return this._width;
+    }
+
+    get height() {
+        return this._height;
+    }
+
+    /**
+     * Get the raw DOM element from the table in case the user wants to do something 
+     * outside of the normal Mosaic API.
+     */
+    getTile(x, y) {
+        // bounds checking
+        if (x >= 0 && x < this._width && y >= 0 && y < this._height)
+            return this._tiles[this._height - 1 - y][x];
+    }
+
+    /**
+     * Clear the Mosaic's tile color values.
+     */
+    clear() {
+        for (let x = 0; x < this._width; x++) {
+            for (let y = 0; y < this._height; y++) {
+                this.getTile(x, y).cellRef.style.backgroundImage = "";
+                this.getTile(x, y).cellRef.style.transform = "";
+                this.getTile(x, y).cellRef.style.backgroundColor = "#eeeeee";
+            }
+        }
+    }
+}
+
+const _moz = new Mosaic(8, 8);
+
+/**
+ * A class that allows for reusable tile textures.
+ */
+class Texture {
+    constructor(...args) {
+        if (!args.length)  return;
+
+        this._type = args[0];
+
+        if (this._type == "color") {
+            this._color = args[1];
+        }
+        else if (this._type == "gradient") {
+            this._gradientType = args[1];
+            this._colors       = args[2];
+        }
+        else if (this._type == "image") {
+            this._imgSrc = args[1];
+        }
+    }
+
+    get type() {
+        return this._type;
+    }
+
+    get color() {
+        return this._color;
+    }
+
+    get colors() {
+        return this._colors;
+    }
+
+    get gradientType() {
+        return this._gradientType;
+    }
+
+    get imgSrc() {
+        return this._imgSrc;
+    }
+}
+
+/**
+ * Create a tile texture.
+ * @param  {...String} args 
+ */
+function createTexture(...args) {
+    if (!args.length) return;
+    if (args.length < 2) return;
+
+    const type = args[0];
+
+    if (type == "color") {
+        const color = args[1];
+
+        return new Texture(type, color);
+    }
+    else if (type == "gradient") {
+        const gradientType = args[1];
+        const colors       = args.slice(2);
+
+        return new Texture(type, gradientType, colors);
+    }
+    else if (type == "image") {
+        const imgSrc = args[1];
+
+        return new Texture(type, imgSrc);
+    }
+}
+
+/**
+ * Get the texture of a tile.
+ * @returns {Texture} texture
+ */
+function getTexture(x, y) {
+    return _moz.getTile(x, y).texture;
+}
+
+/**
+ * Set the texture of a tile.
+ * @param {Number} x 
+ * @param {Number} y 
+ * @param {Texture} texture 
+ */
+function setTexture(x, y, texture) {
+    const tile = _moz.getTile(x, y);
+
+    tile.texture = texture;
+
+    if (texture.type == "color") {
+        tile.cellRef.style.backgroundColor = tile.texture.color;
+    }
+    else if (texture.type == "gradient") {
+        if (texture.gradientType == "linear") {
+            tile.cellRef.style.backgroundImage = "linear-gradient(" + tile.texture.colors.join(",") + ")";
+        }
+        else if (texture.gradientType == "radial") {
+            tile.cellRef.style.backgroundImage = "radial-gradient(" + tile.texture.colors.join(",") + ")";
+        }
+    }
+    else if (texture.type == "image") {
+        tile.cellRef.style.backgroundImage = "url('" + tile.texture.imgSrc + "')";
+        tile.cellRef.style.backgroundSize = "cover";
+    }
+}
+
+/**
+ * Set the textures of a rectangle.
+ * @param {Number} x1 
+ * @param {Number} y1 
+ * @param {Number} x2 
+ * @param {Number} y2 
+ * @param {Texture} texture 
+ */
+function fillRect(x1, y1, x2, y2, texture) {
+    for (let x = x1; x <= x2; x++) {
+        for (let y = y1; y <= y2; y++) {
+            setTexture(x, y, texture);
+        }
+    }
+}
+
+/**
+ * Add a click listener to the Mosaic tile.
+ * @param {Number} x 
+ * @param {Number} y 
+ * @param {Function} func 
+ */
+function onClick(x, y, func) {
+    _moz.setTileOnClick(x, y, func);
+}
+
+/**
+ * Add a mouse over listener to the Mosaic tile.
+ * @param {Number} x 
+ * @param {Number} y 
+ * @param {Function} func 
+ */
+function onMouseOver(x, y, func) {
+    _moz.setTileOnMouseOver(x, y, func);
+}
+
+/**
+ * A wrapper that allows seperate declarations of key listener functions.
+ * @param {String} key
+ * @param {Function} func
+ */
+function onKey(key, func) {
+    let keyEvent;
+	
+    // if is a letter key
+    if (key.length === 1) {
+        // key letters are lowercase in events
+        keyEvent = key.toLowerCase();
+    }
+    // if is some other key
+    else {
+        // other keys are in proper captalization in events
+        keyEvent = key.charAt(0).toUpperCase() + key.slice(1).toLowerCase();
+    }
+	
+    // if the func is defined and is a function
+    if (func && typeof func == "function") {
+        // map the key to the function
+        _keyMap[keyEvent] = func;
+    }
+}
+
+/**
+ * Get the width of the Mosaic.
+ * @returns {Number} width
+ */
+function getWidth() {
+    return _moz.width;
+}
+
+/**
+ * Get the height of the Mosaic.
+ * @returns {Number} height
+ */
+function getHeight() {
+    return _moz.height;
+}
+
+/**
+ * Clear the Mosaic.
+ */
+function clear() {
+    _moz.clear();
 }

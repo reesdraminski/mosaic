@@ -36,7 +36,7 @@ window.onload = () => {
         indentUnit: 4,
         lineWrapping: true,
         styleActiveLine: { nonEmpty: true },
-        value: "const moz = new Mosaic(5, 5);\n\nmoz.setTileColor(0, 0, \"black\");",
+        value: "",
         extraKeys: {
             "Ctrl-/": instance => commentSelection(),
             "Cmd-/": instance => commentSelection()
@@ -168,6 +168,8 @@ function resetStates() {
 
     // clear event listeners
     clearEventListeners();
+
+    _moz.clear();
 
     // clear Jeroo instances
     Jeroo.prototype.instances = [];
@@ -505,7 +507,6 @@ function renderHelp() {
  */
 function clearEventListeners() {
     document.onclick = () => {};
-    document.onkeydown = () => {};
     document.onkeypress = () => {};
     document.onkeyup = () => {};
     document.onmouseover = () => {};
